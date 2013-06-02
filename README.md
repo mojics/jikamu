@@ -11,3 +11,4 @@ With the help of jQuery.address url routing api, JikamuJS will target not only n
 
 JikamuJS requires jQuery 1.7.2+ and the latest jQuery  Address
 
+ 
