@@ -1,10 +1,20 @@
 ###
 Global Variables for Jikamu
 ###
+
 window.Jikamu ?= {}
 
 Jikamu = (config) -> 
 	@
+
+Jikamu.routes = []
+
+pathNameRegex = /:([\w\d]+)/g
+pathNameReplacement = "([^/]+)"
+splatNameRegex = /\*([\w\d]+)/g
+splatNameReplacement = "(.*)"
+nameRegex = /[:|\*]([\w\d]+)/g
+
 
 ###
 Debug Mode - Set false hide log messages
@@ -33,20 +43,70 @@ Jikamu.$.address = if Jikamu.$.address
 Jikamu Application
 ###
 
-
 class Jikamu.App	
-	routes: []		
-	addPage: (_page) -> 		
-		@routes.push  "deposit/onlinedebit/(*)":_page
-		@	
-	handleRequest: () ->
-		@
-	loadPage: (current_controller) ->	 	
-		@routes[1]
-		
-
+    running: false
+    listener: false
+    ###
+    AddPage
+    @params - Jikamu.RoutePage
+    ###
+    addPage: (new_page) -> 		
+      Jikamu.routes.push  "/deposit/onlinedebit/(*)":new_page
+      @
+    ###
+    HandleRequest - will pass all possible parameters from Route to Page or another
+    ###
+    @handleRequest: () ->
+      console.log "Handling Request ... "
+      console.log Jikamu.$.address.pathNames()
+      @
+    ###
+    loadPage 
+    @deprecated
+    ###
+    loadPage: (current_controller) ->	 	
+  		@routes
+    ###
+    startListener - With the help of jQuery address we will handle all 
+    URL change with it.
+    ###
+    startListener: ->
+      #JQUERY ADDRESS Initialization
+      url_handler = Jikamu.App.handleRequest
+      if window.location.hash 
+        @listener = Jikamu.$(document).ready -> 
+                      Jikamu.$.address.init ->
+                        Jikamu.$('._address').address()
+                        return
+                      .bind 'change', ->
+                        url_handler.call();
+                        return
+                      return
+      return
+    
+    ###
+    start App - the main function in order Jikamu to run
+    ###
+    
+    start: ->
+      console.log "@running"
+      console.log @running
+      if @running is true
+        console.log "Jikamu.App Status : Running... "
+        @handleRequest
+        @
+      else
+        @running = true
+        @startListener.call()
+    ###
+    start App - the main function in order Jikamu to run
+    ###
+    stop: ->
+      @listener = null
+      return
+   
 ###
-Jikamu.Page - Handles Routing for pages in Cashier 
+Jikamu.Page - provide the page template for Jikamu App 
 ###
 
 class Jikamu.Page
@@ -75,18 +135,12 @@ class Jikamu.Page
  
  
  
- 
- 
 ###
-Cashier Router
-Requires a Page object and this will be serve as the page for the Apps, and it will add the URL rules that will be needed by the Router Class later on
+Cashier Router - Requires a Page object and this will be serve as the page for the Apps, 
+  and it will add the URL rules that will be needed by the Router Class later on
+  
+Thanks to DavisJS and I got an idea how to match or create pattern for Jikamu.AppListener
 ###
-
-pathNameRegex = /:([\w\d]+)/g
-pathNameReplacement = "([^/]+)"
-splatNameRegex = /\*([\w\d]+)/g
-splatNameReplacement = "(.*)"
-nameRegex = /[:|\*]([\w\d]+)/g
 
 class Jikamu.Route
 	constructor: (route_config) ->
@@ -106,18 +160,19 @@ class Jikamu.Route
 			@properties.page = new_page	
 			@
 		else
-			throw "Jikamu.Route Error: Invalid data type on adding page"
+			throw "Jikamu.Route Error: Invalid data type on adding page, this requires a Page object"
 
 	convertUrlPathtoRegExp: (path) ->
 		if path not instanceof RegExp
 			str = path.replace(pathNameRegex, pathNameReplacement)
 							 .replace(splatNameRegex, splatNameReplacement)
 			path.lastIndex = 0;
-			log "Converts #{path} and it converts to #{str}"
+			console.log "Converts #{path} and it converts to #{str}"
 			new RegExp("^" + str + "$", "gi");
 		else 
-			log "Pass the original path variable"
+			console.log "Pass the original path variable"
 			path
+
 
 
 
@@ -131,16 +186,16 @@ Test Jikamu Page
 
 cashier_page = new Jikamu.Page()
 				.page_name('deposit')
-				.controller(-> log "Main page")
-				.after_load(-> log "after loading")
-				.before_load(-> log "before loading page")
+				.controller(-> console.log "Main page")
+				.after_load(-> console.log "after loading")
+				.before_load(-> console.log "before loading page")
 
 
 cashier_page_summary = new Jikamu.Page()
 				.page_name('summary')
-				.controller(-> log "Main page")
-				.after_load(-> log "after loading")
-				.before_load(-> log "before loading page")
+				.controller(-> console.log "Main page")
+				.after_load(-> console.log "after loading")
+				.before_load(-> console.log "before loading page")
 cashier_route = new Jikamu.Route()
 			.urlpath('/test/')
 			.page(
@@ -151,13 +206,22 @@ cashier_route = new Jikamu.Route()
 Test CashierAPP
 ###
 
-log "#### JIKAMUJS ####"
+console.log "#### JIKAMUJS ####"
 cashier_app = new Jikamu.App;
 cashier_app.addPage cashier_page
 cashier_app.addPage cashier_page_summary
-log cashier_app 
+console.log cashier_app 
 
-log "#### Route TEST ####"
-log cashier_route.properties
-log "#### Jikamu jQuery Address ####"
-log Jikamu.$.address.path.call()
+console.log "#### Route TEST ####"
+console.log cashier_route.properties
+console.log "#### Jikamu jQuery Address ####"
+console.log Jikamu.$.address
+
+
+
+console.log "#### Jikamu App ####"
+
+jikamu_app = new Jikamu.App()
+jikamu_app.start();
+console.log jikamu_app
+jikamu_app.start();
