@@ -174,8 +174,21 @@ class Jikamu.Route
 			path
 
 
+###
+Jikamu Request
 
-
+This will just inherit Jquery Address methods and properties
+###
+class Jikamu.Request 
+  constructor: (route_config) ->
+      @address = Jikamu.$.address
+      @
+  concatPathNames: ->  
+      console.log "oh yeah123444"
+      console.log @address.path()
+      return
+    
+ 
 
 
 
@@ -224,4 +237,8 @@ console.log "#### Jikamu App ####"
 jikamu_app = new Jikamu.App()
 jikamu_app.start();
 console.log jikamu_app
+
 jikamu_app.start();
+
+console.log "#### Jikamu Request####"
+console.log new Jikamu.Request().concatPathNames()
