@@ -57,8 +57,8 @@ class Jikamu.App
     HandleRequest - will pass all possible parameters from Route to Page or another
     ###
     @handleRequest: () ->
-      console.log "Handling Request ... "
-      console.log Jikamu.$.address.pathNames()
+      #console.log "Handling Request ... "
+      #console.log Jikamu.$.address.pathNames()
       @
     ###
     loadPage 
@@ -89,10 +89,10 @@ class Jikamu.App
     ###
     
     start: ->
-      console.log "@running"
-      console.log @running
+      #console.log "@running"
+      #console.log @running
       if @running is true
-        console.log "Jikamu.App Status : Running... "
+        #console.log "Jikamu.App Status : Running... "
         @handleRequest
         @
       else
@@ -118,20 +118,32 @@ class Jikamu.Page
 			after_load: ->
 
 	page_name: (new_page_name) ->
-		@properties.page_name = new_page_name;
-		@
+    if new_page_name
+      @properties.page_name = new_page_name;
+      @
+    else
+      throw "Jikamu.Page: Invalid page_name"
+		
 	controller: (new_controller) ->
-		@properties.controller = new_controller
-		@
+    #console.log @
+    if typeof new_controller is "function"
+      @properties.controller = new_controller
+      @
+    else
+      throw "Jikamu.Page: Invalid controller this should be a function"
+      
 	before_load: (new_before_load) ->
-		@properties.before_load = new_before_load
-		@
+    if typeof new_before_load is "function"
+      @properties.before_load = new_before_load
+      @
+    else
+      throw "Jikamu.Page: Invalid before load callback this should be a function"
 	after_load: (new_after_load) ->
-		@properties.after_load = new_after_load
-		@
- 
- 
- 
+    if typeof new_after_load is "function"
+      @properties.after_load = new_after_load
+      @
+    else
+      throw "Jikamu.Page: Invalid after load callback this should be a function"
  
  
  
@@ -147,21 +159,24 @@ class Jikamu.Route
 		@properties = 
 			urlpath: false
 			page: ->
+  # Currently we will not support wildcard format
 	urlpath: (new_urlpath) ->
-		
 		if new_urlpath 
-			@properties.urlpath = @convertUrlPathtoRegExp new_urlpath
-			@
+        @properties.urlpath = @convertUrlPathtoRegExp new_urlpath
+        @
 		else
-			throw "Jikamu.Route: Empty or Invalid url path"
+        throw "Jikamu.Route: Empty or Invalid url path"
 	
 	page: (new_page) ->
 		if new_page instanceof Jikamu.Page
-			@properties.page = new_page	
-			@
+        #console.log 'new_page'
+        #console.log new_page
+        @properties.page = new_page	
+        @
 		else
-			throw "Jikamu.Route Error: Invalid data type on adding page, this requires a Page object"
-
+        throw "Jikamu.Route Error: Invalid data type on adding page, this requires a Page object"
+    
+    
 	convertUrlPathtoRegExp: (path) ->
 		if path not instanceof RegExp
 			str = path.replace(pathNameRegex, pathNameReplacement)
@@ -172,6 +187,11 @@ class Jikamu.Route
 		else 
 			console.log "Pass the original path variable"
 			path
+ 
+
+ save: ->
+  Jikamu.routes.push @
+  @
 
 
 ###
@@ -202,19 +222,29 @@ cashier_page = new Jikamu.Page()
 				.controller(-> console.log "Main page")
 				.after_load(-> console.log "after loading")
 				.before_load(-> console.log "before loading page")
-
+				
 
 cashier_page_summary = new Jikamu.Page()
 				.page_name('summary')
-				.controller(-> console.log "Main page")
+				.controller(-> console.log "Main page2")
 				.after_load(-> console.log "after loading")
 				.before_load(-> console.log "before loading page")
+
 cashier_route = new Jikamu.Route()
 			.urlpath('/test/')
 			.page(
-				new Jikamu.Page()
+				cashier_page_summary
 			)
+      .save()
+
 			
+cashier_route.urlpath('test/')
+			.page(
+				cashier_page_summary
+			)
+      .save()
+
+
 ###
 Test CashierAPP
 ###
@@ -223,12 +253,12 @@ console.log "#### JIKAMUJS ####"
 cashier_app = new Jikamu.App;
 cashier_app.addPage cashier_page
 cashier_app.addPage cashier_page_summary
-console.log cashier_app 
+#console.log cashier_app 
 
-console.log "#### Route TEST ####"
-console.log cashier_route.properties
-console.log "#### Jikamu jQuery Address ####"
-console.log Jikamu.$.address
+#console.log "#### Route TEST ####"
+#console.log cashier_route.properties
+#console.log "#### Jikamu jQuery Address ####"
+#console.log Jikamu.$.address
 
 
 
@@ -236,9 +266,11 @@ console.log "#### Jikamu App ####"
 
 jikamu_app = new Jikamu.App()
 jikamu_app.start();
-console.log jikamu_app
+#console.log jikamu_app
 
 jikamu_app.start();
 
-console.log "#### Jikamu Request####"
-console.log new Jikamu.Request().concatPathNames()
+#console.log "#### Jikamu Request####"
+#console.log new Jikamu.Request().concatPathNames()
+
+console.log match = /^\/test\/onlinedebit$/gi.test("/test/onlinedebit")
