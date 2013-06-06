@@ -9,7 +9,7 @@ Jikamu = (config) ->
 
 Jikamu.routes = []
 
-pathNameRegex = /:([\w\d]+)/g
+pathNameRegex = '/'
 pathNameReplacement = "([^/]+)"
 splatNameRegex = /\*([\w\d]+)/g
 splatNameReplacement = "(.*)"
@@ -51,7 +51,7 @@ class Jikamu.App
     @params - Jikamu.RoutePage
     ###
     addPage: (new_page) -> 		
-      Jikamu.routes.push  "/deposit/onlinedebit/(*)":new_page
+      Jikamu.routes.push  "/deposit/onlinedebit/:name":new_page
       @
     ###
     HandleRequest - will pass all possible parameters from Route to Page or another
@@ -231,7 +231,7 @@ cashier_page_summary = new Jikamu.Page()
 				.before_load(-> console.log "before loading page")
 
 cashier_route = new Jikamu.Route()
-			.urlpath('/test/')
+			.urlpath('/test/test')
 			.page(
 				cashier_page_summary
 			)
@@ -273,4 +273,5 @@ jikamu_app.start();
 #console.log "#### Jikamu Request####"
 #console.log new Jikamu.Request().concatPathNames()
 
-console.log match = /^\/test\/onlinedebit$/gi.test("/test/onlinedebit")
+console.log match = /^\/test\/onlinedebit\/(....)$/gi.test("/test/onlinedebit/sxs")
+test = /^\/test\/onlinedebit/
