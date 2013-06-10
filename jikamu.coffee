@@ -60,7 +60,7 @@ class Jikamu.App
         route.urlpath.lastIndex = 0
         if route.urlpath.test(Jikamu.$.address.path()) 
             Jikamu.App.launcher(@,route.handler)
-            if Jikamu.DEBUG then console.log "call controller for the url #{route.urlpath}"
+            if window.Jikamu.DEBUG then console.log "call controller for the url #{route.urlpath}"
             status = true
             break
       if status is false
@@ -78,13 +78,26 @@ class Jikamu.App
       if current_handler instanceof Jikamu.Page
 
         afterLoad = ->
+          current_handler.properties.after_load.apply()
+        
+        beforeLoad = ->
           current_handler.properties.before_load.apply()
         
         controllerLoad = (_self, callback) ->
           current_handler.properties.controller.apply(_self, callback)
         console.log current_handler.properties.page_name
         document.title = current_handler.properties.page_name
-        controllerLoad.apply(_this,afterLoad)
+        #controllerLoad.apply(_this,afterLoad)
+        
+        $.when(beforeLoad.apply())
+          .then ->
+            console.log 'Loaded bootstrap files'; 
+            $.when(controllerLoad.apply(_this,afterLoad))
+              .then ->
+                console.log 'Next is the Callback function'; 
+                afterLoad.apply();
+                
+        return
 
       else
         throw "Jikamu.App : Invalid Page Controller"
@@ -210,10 +223,10 @@ class Jikamu.Route
 			str = path.replace(pathNameRegex, pathNameReplacement)
 							 .replace(splatNameRegex, splatNameReplacement)
 			path.lastIndex = 0;
-			if Jikamu.DEBUG then  console.log "Converts #{path} and it converts to #{new RegExp("^" + str + "$", "gi")}"
-			new RegExp("^" + str + "$", "gi");
+			if window.Jikamu.DEBUG then  console.log "Converts #{path} and it converts to #{new RegExp("^" + str + "$", "gi")}"
+			new RegExp("^#{str}$","gi");
 		else 
-			if Jikamu.DEBUG then  console.log "Pass the original path variable"
+			if window.Jikamu.DEBUG then  console.log "Pass the original path variable"
 			path
  
  ###
@@ -237,6 +250,9 @@ class Jikamu.Route
 ###
 Test Jikamu Page
 ###
+window.cashier_app ?= {}
+
+cashier_app.banks = []
 
 cashier_page = new Jikamu.Page()
 				.page_name('Deposit / Onlinedebit')
@@ -244,7 +260,20 @@ cashier_page = new Jikamu.Page()
             uri = 'http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=demo'
             Jikamu.$.get(uri)
               .done (ret) ->
-                  console.log "Main page"
+                  cashier_app.banks = ret
+                  console.log "Main Banks"
+                  console.log ret
+                  true
+              
+              .always () ->
+                  console.log 'boom!'
+
+          )
+				.before_load((self,callback)->
+            uri = 'http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=demo'
+            Jikamu.$.get(uri)
+              .done (ret) ->
+                  console.log "Preload page"
                   console.log ret
                   true
               
@@ -254,9 +283,6 @@ cashier_page = new Jikamu.Page()
           )
 				.after_load(-> 
             if Jikamu.DEBUG then console.log "After Loading"
-            true
-          )
-				.before_load(-> 
             true
           )
 				
@@ -283,7 +309,7 @@ cashier_route = new Jikamu.Route()
       .save()
 
 			
-cashier_route.urlpath('/deposit/onlinedebit/confirm')
+cashier_route.urlpath('/deposit/:name/confirm')
 			.page(
 				cashier_page_summary
 			)
