@@ -13,7 +13,7 @@ JikamuJS requires jQuery 1.7.2+ and the latest jQuery Address
 
 ##Usage
 
-###Adding a new Route with your page
+    ###Adding a new Route with your page
 
     new Jikamu.Route()
         .urlpath('/blog')
@@ -33,6 +33,6 @@ JikamuJS requires jQuery 1.7.2+ and the latest jQuery Address
         )
         .save();
 
- ###Starting your App
+    ###Starting your App
 
     new Jikamu.App().start();
