@@ -16,7 +16,7 @@ JikamuJS requires jQuery 1.7.2+ and the latest jQuery Address
 Using JikamuJS is very simple , pull out the Route class and supply URL Path, Controller
 Before Load and After load callbacks.
 
-    ###Adding a new Route with your page
+###Adding a new Route with your page
 
     new Jikamu.Route()
         .urlpath('/blog')
@@ -36,15 +36,20 @@ Before Load and After load callbacks.
         )
         .save();
 
-    Starting your App
+###Starting your App
 
-    new Jikamu.App().start();
+    new Jikamu();
 
-    Stopping your App
-
-    new Jikamu.App().stop();
-
-##Accessing URL parameters
+###Accessing URL parameters
 
 Checkout jQuery Address API and references here
     http://www.asual.com/jquery/address/
+
+##Future Plans
+
+ - Unit tests
+ - Separate files and classes
+ - Documentation
+ - Add more features
+
+.
