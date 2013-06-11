@@ -4,8 +4,6 @@ Global Variables for Jikamu
 
 window.Jikamu ?= {}
 
-Jikamu = (config) -> 
-	@
 
 Jikamu.routes = []
 
@@ -17,7 +15,6 @@ pathNameReplacement = "([^/]+)"
 splatNameRegex = /\*([\w\d]+)/g
 splatNameReplacement = "(.*)"
 nameRegex = /[:|\*]([\w\d]+)/g
-
 
 ###
 Debug Mode - Set false hide log messages
@@ -40,6 +37,10 @@ Jikamu.$ = if window.jQuery
 
 Jikamu.$.address = if Jikamu.$.address
 	Jikamu.$.address 
+
+
+Jikamu = (config) -> 
+  @
 
 
 ###
@@ -132,7 +133,7 @@ class Jikamu.App
         @running = true
         @startListener.call()
     ###
-    start App - the main function in order Jikamu to run
+    Stop App - the main function in order Jikamu to run
     ###
     stop: ->
       @listener = null
@@ -241,105 +242,4 @@ class Jikamu.Route
   _arr.handler = @properties.page
   Jikamu.routes.push _arr
   @
-   
  
-
-
-
-
-###
-Test Jikamu Page
-###
-window.cashier_app ?= {}
-
-cashier_app.banks = []
-
-cashier_page = new Jikamu.Page()
-				.page_name('Deposit / Onlinedebit')
-				.controller((self,callback)->
-            uri = 'http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=demo'
-            Jikamu.$.get(uri)
-              .done (ret) ->
-                  cashier_app.banks = ret
-                  console.log "Main Banks"
-                  console.log ret
-                  true
-              
-              .always () ->
-                  console.log 'boom!'
-
-          )
-				.before_load((self,callback)->
-            uri = 'http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=demo'
-            Jikamu.$.get(uri)
-              .done (ret) ->
-                  console.log "Preload page"
-                  console.log ret
-                  true
-              
-              .always () ->
-                  console.log 'boom!'
-
-          )
-				.after_load(-> 
-            if Jikamu.DEBUG then console.log "After Loading"
-            true
-          )
-				
-
-cashier_page_summary = new Jikamu.Page()
-				.page_name('Deposit / Onlinedebit / Confirmation')
-				.controller(-> 
-            if Jikamu.DEBUG then console.log "Main page2"
-          )
-				.after_load(-> 
-            if Jikamu.DEBUG then console.log "After Loading2"
-            true
-          )
-				.before_load(-> 
-            console.log "Before Loading 2"
-            true
-          )
-
-cashier_route = new Jikamu.Route()
-			.urlpath('/deposit/onlinedebit')
-			.page(
-				cashier_page
-			)
-      .save()
-
-			
-cashier_route.urlpath('/deposit/:name/confirm')
-			.page(
-				cashier_page_summary
-			)
-      .save()
-
-
-###
-Test CashierAPP
-###
-
-if Jikamu.DEBUG then console.log "#### JIKAMUJS ####"
-cashier_app = new Jikamu.App;
-#cashier_app.addPage cashier_page
-#cashier_app.addPage cashier_page_summary
-#console.log cashier_app 
-
-#console.log "#### Route TEST ####"
-#console.log cashier_route.properties
-#console.log "#### Jikamu jQuery Address ####"
-#console.log Jikamu.$.address
-
-
-
-console.log "#### Jikamu App ####"
-
-jikamu_app = new Jikamu.App()
-jikamu_app.start();
-#console.log jikamu_app
-
-jikamu_app.start();
-
-#console.log "#### Jikamu Request####"
-#console.log new Jikamu.Request().concatPathNames()
