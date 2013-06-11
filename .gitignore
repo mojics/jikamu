@@ -13,3 +13,4 @@
 *.a
 
 jikamu.esproj
+.DS_Store
