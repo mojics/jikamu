@@ -8,7 +8,7 @@ window.Jikamu ?= {}
 Jikamu = (config) -> 
   _app = new Jikamu.App();
   Jikamu.$ ->
-  _app.start()
+    _app.start()
   _app
   
 Jikamu.routes = []

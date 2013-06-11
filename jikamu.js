@@ -2,14 +2,19 @@
 Global Variables for Jikamu
 */
 
-var Jikamu, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement, _ref;
+var Jikamu, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement;
 
-if ((_ref = window.Jikamu) == null) {
+if (window.Jikamu == null) {
   window.Jikamu = {};
 }
 
 Jikamu = function(config) {
-  return this;
+  var _app;
+  _app = new Jikamu.App();
+  Jikamu.$(function() {
+    return _app.start();
+  });
+  return _app;
 };
 
 Jikamu.routes = [];
@@ -60,7 +65,6 @@ Jikamu Application
 
 
 Jikamu.App = (function() {
-
   function App() {}
 
   App.prototype.running = false;
@@ -68,17 +72,17 @@ Jikamu.App = (function() {
   App.prototype.listener = false;
 
   /*
-      HandleRequest - will pass all possible parameters from Route to Page or 
-      another
+  HandleRequest - will pass all possible parameters from Route to Page or 
+  another
   */
 
 
   App.handleRequest = function() {
-    var route, status, _i, _len, _ref1;
+    var route, status, _i, _len, _ref;
     status = false;
-    _ref1 = Jikamu.routes;
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      route = _ref1[_i];
+    _ref = Jikamu.routes;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      route = _ref[_i];
       route.urlpath.lastIndex = 0;
       if (route.urlpath.test(Jikamu.$.address.path())) {
         Jikamu.App.launcher(this, route.handler);
@@ -96,7 +100,7 @@ Jikamu.App = (function() {
   };
 
   /*
-      loadPage
+  loadPage
   */
 
 
@@ -128,8 +132,8 @@ Jikamu.App = (function() {
   };
 
   /*
-      startListener - With the help of jQuery address we will handle all 
-      URL change with it.
+  startListener - With the help of jQuery address we will handle all 
+  URL change with it.
   */
 
 
@@ -148,7 +152,7 @@ Jikamu.App = (function() {
   };
 
   /*
-      start App - the main function in order Jikamu to run
+  start App - the main function in order Jikamu to run
   */
 
 
@@ -163,7 +167,7 @@ Jikamu.App = (function() {
   };
 
   /*
-      Stop App - the main function in order Jikamu to run
+  Stop App - the main function in order Jikamu to run
   */
 
 
@@ -181,7 +185,6 @@ Jikamu.Page - provide the page template for Jikamu App
 
 
 Jikamu.Page = (function() {
-
   function Page() {
     this.properties = {
       page_name: false,
@@ -210,7 +213,7 @@ Jikamu.Page = (function() {
   };
 
   /*
-    @deprecated
+  @deprecated
   */
 
 
@@ -224,7 +227,7 @@ Jikamu.Page = (function() {
   };
 
   /*
-    @deprecated
+  @deprecated
   */
 
 
@@ -251,7 +254,6 @@ Thanks to DavisJS and I got an idea how to match or create pattern for Jikamu.Ap
 
 
 Jikamu.Route = (function() {
-
   function Route(route_config) {
     this.properties = {
       urlpath: false,
@@ -291,9 +293,9 @@ Jikamu.Route = (function() {
   };
 
   /*
-   Save Route - saves the current route object to the global variable Jikamu.routes
+  Save Route - saves the current route object to the global variable Jikamu.routes
   
-   @method: save
+  @method: save
   */
 
 
