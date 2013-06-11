@@ -9,6 +9,30 @@ With the help of jQuery.address url routing api, JikamuJS will target not only n
 
 ##Requirements
 
-JikamuJS requires jQuery 1.7.2+ and the latest jQuery  Address
+JikamuJS requires jQuery 1.7.2+ and the latest jQuery Address
 
- 
+##Usage
+
+###Adding a new Route with your page
+
+    new Jikamu.Route()
+        .urlpath('/blog')
+        .page(
+            {
+                page_name: "Blog Page",
+                controller: function(){
+                    $("#container").html('Blog Page');
+                },
+                before_load:function(){
+                    console.log('Before loading Blog page');
+                },
+                after_load:function(){
+                    console.log('After loading blog page');
+                }
+            }
+        )
+        .save();
+
+ ###Starting your App
+
+    new Jikamu.App().start();

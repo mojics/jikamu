@@ -8,6 +8,10 @@ if ((_ref = window.Jikamu) == null) {
   window.Jikamu = {};
 }
 
+Jikamu = function(config) {
+  return this;
+};
+
 Jikamu.routes = [];
 
 /*
@@ -49,10 +53,6 @@ Check if jQuery library exists along with jQuery Address
 Jikamu.$ = window.jQuery ? jQuery : void 0;
 
 Jikamu.$.address = Jikamu.$.address ? Jikamu.$.address : void 0;
-
-Jikamu = function(config) {
-  return this;
-};
 
 /*
 Jikamu Application
@@ -186,12 +186,8 @@ Jikamu.Page = (function() {
     this.properties = {
       page_name: false,
       controller: function() {},
-      before_load: function() {
-        return true;
-      },
-      after_load: function() {
-        return true;
-      }
+      before_load: function() {},
+      after_load: function() {}
     };
   }
 
@@ -272,13 +268,9 @@ Jikamu.Route = (function() {
     }
   };
 
-  Route.prototype.page = function(new_page) {
-    if (new_page instanceof Jikamu.Page) {
-      this.properties.page = new_page;
-      return this;
-    } else {
-      throw "Jikamu.Route Error: Invalid data type on adding page, this requires a Page object";
-    }
+  Route.prototype.page = function(obj) {
+    this.properties.page = new Jikamu.Page().page_name(obj.page_name).controller(obj.controller).before_load(obj.before_load).after_load(obj.after_load);
+    return this;
   };
 
   Route.prototype.convertUrlPathtoRegExp = function(path) {

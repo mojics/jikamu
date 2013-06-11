@@ -5,6 +5,9 @@ Global Variables for Jikamu
 window.Jikamu ?= {}
 
 
+Jikamu = (config) -> 
+  @
+  
 Jikamu.routes = []
 
 ###
@@ -37,10 +40,6 @@ Jikamu.$ = if window.jQuery
 
 Jikamu.$.address = if Jikamu.$.address
 	Jikamu.$.address 
-
-
-Jikamu = (config) -> 
-  @
 
 
 ###
@@ -150,8 +149,8 @@ class Jikamu.Page
 		@properties = 
 			page_name: false
 			controller: -> 
-			before_load:  -> true
-			after_load: -> true
+			before_load:  -> 
+			after_load: -> 
 
 	page_name: (new_page_name) ->
     if new_page_name
@@ -209,14 +208,14 @@ class Jikamu.Route
 		else
         throw "Jikamu.Route: Empty or Invalid url path"
 	
-	page: (new_page) ->
-		if new_page instanceof Jikamu.Page
-        #console.log 'new_page'
-        #console.log new_page
-        @properties.page = new_page	
-        @
-		else
-        throw "Jikamu.Route Error: Invalid data type on adding page, this requires a Page object"
+	page: (obj) ->
+    @properties.page = new Jikamu.Page()
+      .page_name(obj.page_name)
+      .controller(obj.controller)
+      .before_load(obj.before_load)
+      .after_load(obj.after_load)
+    @
+		
     
   
 	convertUrlPathtoRegExp: (path) ->
