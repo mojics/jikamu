@@ -2,17 +2,18 @@
 Global Variables for Jikamu
 */
 
-var Jikamu, cashier_app, cashier_page, cashier_page_summary, cashier_route, jikamu_app, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement, _ref;
+var Jikamu, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement, _ref;
 
 if ((_ref = window.Jikamu) == null) {
   window.Jikamu = {};
 }
 
-Jikamu = function(config) {
-  return this;
-};
-
 Jikamu.routes = [];
+
+/*
+Regex pattern from DavisJS.coms
+*/
+
 
 pathNameRegex = /:([\w\d]+)/g;
 
@@ -41,13 +42,17 @@ log = function(log_message) {
 };
 
 /*
-Check if jQuery library exists
+Check if jQuery library exists along with jQuery Address
 */
 
 
 Jikamu.$ = window.jQuery ? jQuery : void 0;
 
 Jikamu.$.address = Jikamu.$.address ? Jikamu.$.address : void 0;
+
+Jikamu = function(config) {
+  return this;
+};
 
 /*
 Jikamu Application
@@ -63,38 +68,64 @@ Jikamu.App = (function() {
   App.prototype.listener = false;
 
   /*
-      AddPage
-      @params - Jikamu.RoutePage
-  */
-
-
-  App.prototype.addPage = function(new_page) {
-    Jikamu.routes.push({
-      "/deposit/onlinedebit/(*)": new_page
-    });
-    return this;
-  };
-
-  /*
-      HandleRequest - will pass all possible parameters from Route to Page or another
+      HandleRequest - will pass all possible parameters from Route to Page or 
+      another
   */
 
 
   App.handleRequest = function() {
-    console.log("Handling Request ... ");
-    console.log(Jikamu.$.address.pathNames());
-    return this;
+    var route, status, _i, _len, _ref1;
+    status = false;
+    _ref1 = Jikamu.routes;
+    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      route = _ref1[_i];
+      route.urlpath.lastIndex = 0;
+      if (route.urlpath.test(Jikamu.$.address.path())) {
+        Jikamu.App.launcher(this, route.handler);
+        if (window.Jikamu.DEBUG) {
+          console.log("call controller for the url " + route.urlpath);
+        }
+        status = true;
+        break;
+      }
+    }
+    if (status === false) {
+      document.title = 'Not Found';
+      console.log("Handle not found route rule");
+    }
   };
 
   /*
-      loadPage 
-      @deprecated
+      loadPage
   */
 
 
-  App.prototype.loadPage = function(current_controller) {};
-
-  App.routes;
+  App.launcher = function(_this, current_handler) {
+    var afterLoad, beforeLoad, controllerLoad;
+    if (current_handler instanceof Jikamu.Page) {
+      afterLoad = function() {
+        return current_handler.properties.after_load.apply();
+      };
+      beforeLoad = function() {
+        return current_handler.properties.before_load.apply();
+      };
+      controllerLoad = function(_self, callback) {
+        return current_handler.properties.controller.apply(_self, callback);
+      };
+      console.log(current_handler.properties.page_name);
+      document.title = current_handler.properties.page_name;
+      $.when(beforeLoad.apply()).then(function() {
+        console.log('Loaded bootstrap files');
+        return $.when(controllerLoad.apply(_this, afterLoad)).then(function() {
+          console.log('Next is the Callback function');
+          return afterLoad.apply();
+        });
+      });
+      return;
+    } else {
+      throw "Jikamu.App : Invalid Page Controller";
+    }
+  };
 
   /*
       startListener - With the help of jQuery address we will handle all 
@@ -122,10 +153,7 @@ Jikamu.App = (function() {
 
 
   App.prototype.start = function() {
-    console.log("@running");
-    console.log(this.running);
     if (this.running === true) {
-      console.log("Jikamu.App Status : Running... ");
       this.handleRequest;
       return this;
     } else {
@@ -135,7 +163,7 @@ Jikamu.App = (function() {
   };
 
   /*
-      start App - the main function in order Jikamu to run
+      Stop App - the main function in order Jikamu to run
   */
 
 
@@ -158,29 +186,59 @@ Jikamu.Page = (function() {
     this.properties = {
       page_name: false,
       controller: function() {},
-      before_load: function() {},
-      after_load: function() {}
+      before_load: function() {
+        return true;
+      },
+      after_load: function() {
+        return true;
+      }
     };
   }
 
   Page.prototype.page_name = function(new_page_name) {
-    this.properties.page_name = new_page_name;
-    return this;
+    if (new_page_name) {
+      this.properties.page_name = new_page_name;
+      return this;
+    } else {
+      throw "Jikamu.Page: Invalid page_name";
+    }
   };
 
   Page.prototype.controller = function(new_controller) {
-    this.properties.controller = new_controller;
-    return this;
+    if (typeof new_controller === "function") {
+      this.properties.controller = new_controller;
+      return this;
+    } else {
+      throw "Jikamu.Page: Invalid controller this should be a function";
+    }
   };
+
+  /*
+    @deprecated
+  */
+
 
   Page.prototype.before_load = function(new_before_load) {
-    this.properties.before_load = new_before_load;
-    return this;
+    if (typeof new_before_load === "function") {
+      this.properties.before_load = new_before_load;
+      return this;
+    } else {
+      throw "Jikamu.Page: Invalid before load callback this should be a function";
+    }
   };
 
+  /*
+    @deprecated
+  */
+
+
   Page.prototype.after_load = function(new_after_load) {
-    this.properties.after_load = new_after_load;
-    return this;
+    if (typeof new_after_load === "function") {
+      this.properties.after_load = new_after_load;
+      return this;
+    } else {
+      throw "Jikamu.Page: Invalid after load callback this should be a function";
+    }
   };
 
   return Page;
@@ -188,9 +246,10 @@ Jikamu.Page = (function() {
 })();
 
 /*
-Cashier Router - Requires a Page object and this will be serve as the page for the Apps, 
-  and it will add the URL rules that will be needed by the Router Class later on
-  
+Cashier Router - Requires a Page object and this will be serve as the page for 
+the Apps, and it will add the URL rules that will be needed by the Router Class 
+later on.
+
 Thanks to DavisJS and I got an idea how to match or create pattern for Jikamu.AppListener
 */
 
@@ -227,98 +286,34 @@ Jikamu.Route = (function() {
     if (!(path instanceof RegExp)) {
       str = path.replace(pathNameRegex, pathNameReplacement).replace(splatNameRegex, splatNameReplacement);
       path.lastIndex = 0;
-      console.log("Converts " + path + " and it converts to " + str);
+      if (window.Jikamu.DEBUG) {
+        console.log("Converts " + path + " and it converts to " + (new RegExp("^" + str + "$", "gi")));
+      }
       return new RegExp("^" + str + "$", "gi");
     } else {
-      console.log("Pass the original path variable");
+      if (window.Jikamu.DEBUG) {
+        console.log("Pass the original path variable");
+      }
       return path;
     }
+  };
+
+  /*
+   Save Route - saves the current route object to the global variable Jikamu.routes
+  
+   @method: save
+  */
+
+
+  Route.prototype.save = function() {
+    var _arr;
+    _arr = {};
+    _arr.urlpath = this.properties.urlpath;
+    _arr.handler = this.properties.page;
+    Jikamu.routes.push(_arr);
+    return this;
   };
 
   return Route;
 
 })();
-
-/*
-Jikamu Request
-
-This will just inherit Jquery Address methods and properties
-*/
-
-
-Jikamu.Request = (function() {
-
-  function Request(route_config) {
-    this.address = Jikamu.$.address;
-    this;
-
-  }
-
-  Request.prototype.concatPathNames = function() {
-    console.log("oh yeah123444");
-    console.log(this.address.path());
-  };
-
-  return Request;
-
-})();
-
-/*
-Test Jikamu Page
-*/
-
-
-cashier_page = new Jikamu.Page().page_name('deposit').controller(function() {
-  return console.log("Main page");
-}).after_load(function() {
-  return console.log("after loading");
-}).before_load(function() {
-  return console.log("before loading page");
-});
-
-cashier_page_summary = new Jikamu.Page().page_name('summary').controller(function() {
-  return console.log("Main page");
-}).after_load(function() {
-  return console.log("after loading");
-}).before_load(function() {
-  return console.log("before loading page");
-});
-
-cashier_route = new Jikamu.Route().urlpath('/test/').page(new Jikamu.Page());
-
-/*
-Test CashierAPP
-*/
-
-
-console.log("#### JIKAMUJS ####");
-
-cashier_app = new Jikamu.App;
-
-cashier_app.addPage(cashier_page);
-
-cashier_app.addPage(cashier_page_summary);
-
-console.log(cashier_app);
-
-console.log("#### Route TEST ####");
-
-console.log(cashier_route.properties);
-
-console.log("#### Jikamu jQuery Address ####");
-
-console.log(Jikamu.$.address);
-
-console.log("#### Jikamu App ####");
-
-jikamu_app = new Jikamu.App();
-
-jikamu_app.start();
-
-console.log(jikamu_app);
-
-jikamu_app.start();
-
-console.log("#### Jikamu Request####");
-
-console.log(new Jikamu.Request().concatPathNames());
