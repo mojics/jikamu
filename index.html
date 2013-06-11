@@ -3,8 +3,61 @@
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.address.js" type="text/javascript"></script>
 <script src="jikamu.js" type="text/javascript"></script>
+<script type="text/javascript">
+    /*
+    Test Jikamu Page
+    */
+    if ((_ref1 = window.cashier_app) == null) {
+      window.SimpleApp = {};
+    }
+    
+    SimpleApp.banks = [];
+    
+    SimpleApp.route = new Jikamu.Route();
+    
+    SimpleApp.route
+        .urlpath('/blog')
+        .page(
+            {
+                page_name: "Blog Page",
+                controller: function(){
+                    $("#container").html('Blog Page');
+                },
+                before_load:function(){
+                    console.log('Before loading Blog page');
+                },
+                after_load:function(){
+                    console.log('After loading blog page');
+                }
+            }
+        )
+        .save();
+    
+    SimpleApp.route
+        .urlpath('/')
+        .page(
+            {
+                page_name: "Main Index Page",
+                controller: function(){
+                    $("#container").html('Index Page');
+                },
+                before_load:function(){
+                    console.log('Before loading Index page');
+                },
+                after_load:function(){
+                    console.log('After loading Index page');
+                }
+            }
+        )
+        .save();
+    
+    
+    new Jikamu.App().start();
+</script>
 </head> 
 <body>
-JikamuJS 
+    <div id="container">
+        JikamuJS 
+    </div>
 </body>
 </html>
