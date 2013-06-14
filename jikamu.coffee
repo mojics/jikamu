@@ -22,7 +22,7 @@ window.Jikamu.DEBUG = true
 
 ###
 JS Tools
-###
+### 
 
 log = (log_message) -> 
   window.Jikamu.DEBUG && window.console and console.log log_message
@@ -243,17 +243,17 @@ class Jikamu.Route
     else 
       if window.Jikamu.DEBUG then  console.log "Pass the original path variable"
       path
- 
- ###
- Save Route - saves the current route object to the global variable Jikamu.routes
 
- @method: save
- 
- ###
- save: ->
-  _arr = {}
-  _arr.urlpath = @properties.urlpath
-  _arr.handler = @properties.page
-  Jikamu.routes.push _arr
-  
+  ###
+  Save Route - saves the current route object to the global variable Jikamu.routes
+
+  @method: save
+
+  ###
+  save: ->
+    _arr = {}
+    _arr.urlpath = @properties.urlpath
+    _arr.handler = @properties.page
+    Jikamu.routes.push _arr
+
  

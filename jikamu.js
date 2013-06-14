@@ -303,22 +303,21 @@ Jikamu.Route = (function() {
     }
   };
 
-  return Route;
-
-})();
-
-({
   /*
   Save Route - saves the current route object to the global variable Jikamu.routes
   
   @method: save
   */
 
-  save: function() {
+
+  Route.prototype.save = function() {
     var _arr;
     _arr = {};
     _arr.urlpath = this.properties.urlpath;
     _arr.handler = this.properties.page;
     return Jikamu.routes.push(_arr);
-  }
-});
+  };
+
+  return Route;
+
+})();
