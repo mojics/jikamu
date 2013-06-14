@@ -12,7 +12,7 @@
     }
     
     SimpleApp.banks = [];
-    
+    _jq = jQuery;
     SimpleApp.route = new Jikamu.Route();
     
     SimpleApp.route
@@ -39,10 +39,36 @@
             {
                 page_name: "Main Index Page",
                 controller: function(){
+                    var _def = new _jq.Deferred();
                     $("#container").html('Index Page');
+                    _jq.ajax({
+                        type: "GET",
+                        url: 'http://api.geonames.org/countryCodeJSON?formatted=true&lat=47.03&lng=10.2&username=demo&style=full',
+                        dataType: "jsonp",
+                        async : false,
+                        success:function(info){
+                            console.log(info);
+                            _def.resolve();
+                        }
+                    });
+                    return _def.promise();
                 },
                 before_load:function(){
+                    var _def = new _jq.Deferred();
+                    console.log(self);
                     console.log('Before loading Index page');
+                    /*Load Payment Options*/
+                    _jq.ajax({
+                        type: "GET",
+                        url: 'http://api.geonames.org/countryCodeJSON?formatted=true&lat=47.03&lng=10.2&username=demo&style=full',
+                        dataType: "jsonp",
+                        async : false,
+                        success:function(info){
+                            console.log(info);
+                            _def.resolve();
+                        }
+                    });
+                    return _def.promise();
                 },
                 after_load:function(){
                     console.log('After loading Index page');
