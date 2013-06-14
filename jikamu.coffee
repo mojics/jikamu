@@ -1,13 +1,13 @@
 ###
-Global Variables for EcommApp
+Global Variables for Jikamu
 ###
 
-window.EcommApp ?= {}
+window.Jikamu ?= {}
 
 
-EcommApp = (config) -> 
-  _app = new EcommApp.App();
-  EcommApp.$ ->
+Jikamu = (config) -> 
+  _app = new Jikamu.App();
+  Jikamu.$ ->
     _app.start()
   _app
 
@@ -17,7 +17,7 @@ Debug Mode - Set false hide log messages
 @author Ronald Allan Mojica
 ###
 
-window.EcommApp.DEBUG = true
+window.Jikamu.DEBUG = true
 
 
 ###
@@ -25,23 +25,23 @@ JS Tools
 ###
 
 log = (log_message) -> 
-  window.EcommApp.DEBUG && window.console and console.log log_message
+  window.Jikamu.DEBUG && window.console and console.log log_message
 
 ###
 Check if jQuery library exists along with jQuery Address
 ###
-EcommApp.$ = if window.jQuery 
+Jikamu.$ = if window.jQuery 
   jQuery 
 
-EcommApp.$.address = if EcommApp.$.address
-  EcommApp.$.address 
+Jikamu.$.address = if Jikamu.$.address
+  Jikamu.$.address 
 
 
 ###
-EcommApp Application
+Jikamu Application
 ###
 
-class EcommApp.App  
+class Jikamu.App  
     running: false
     listener: false
 
@@ -51,11 +51,11 @@ class EcommApp.App
     ###
     @handleRequest: () ->
       status = false
-      for route in EcommApp.routes
+      for route in Jikamu.routes
         route.urlpath.lastIndex = 0
-        if route.urlpath.test(EcommApp.$.address.path()) 
-            EcommApp.App.launcher(@,route.handler)
-            if window.EcommApp.DEBUG then console.log "call controller for the url #{route.urlpath}"
+        if route.urlpath.test(Jikamu.$.address.path()) 
+            Jikamu.App.launcher(@,route.handler)
+            if window.Jikamu.DEBUG then console.log "call controller for the url #{route.urlpath}"
             status = true
             break
       if status is false
@@ -70,20 +70,20 @@ class EcommApp.App
     loadPage     
     ### 
     @launcher: (_this, current_handler) ->   
-      if current_handler instanceof EcommApp.Page
+      if current_handler instanceof Jikamu.Page
         
         afterLoad = (_self,_d) ->
           current_handler.properties.after_load.call(_self,_d)
         
         beforeLoad = () ->
-          _deferred = new EcommApp.$.Deferred();
-          EcommApp.$.when(current_handler.properties.before_load.call())
+          _deferred = new Jikamu.$.Deferred();
+          Jikamu.$.when(current_handler.properties.before_load.call())
             .then -> _deferred.resolve();
           _deferred.promise();
         
         controllerLoad = ->
-          _deferred = new EcommApp.$.Deferred();
-          EcommApp.$.when(current_handler.properties.controller.call())
+          _deferred = new Jikamu.$.Deferred();
+          Jikamu.$.when(current_handler.properties.controller.call())
             .then -> _deferred.resolve();
           _deferred.promise();
         
@@ -102,7 +102,7 @@ class EcommApp.App
         return
 
       else
-        throw "EcommApp.App : Invalid Page Controller"
+        throw "Jikamu.App : Invalid Page Controller"
       return
       
     ###
@@ -111,11 +111,11 @@ class EcommApp.App
     ###
     startListener: ->
       #JQUERY ADDRESS Initialization
-      url_handler = EcommApp.App.handleRequest
+      url_handler = Jikamu.App.handleRequest
       if window.location.hash 
-        @listener = EcommApp.$(document).ready -> 
-                      EcommApp.$.address.init ->
-                        EcommApp.$('._address').address()
+        @listener = Jikamu.$(document).ready -> 
+                      Jikamu.$.address.init ->
+                        Jikamu.$('._address').address()
                         return
                       .bind 'change', ->
                         url_handler.call();
@@ -124,7 +124,7 @@ class EcommApp.App
       return
     
     ###
-    start App - the main function in order EcommApp to run
+    start App - the main function in order Jikamu to run
     ###
     start: ->
       if @running is true
@@ -134,19 +134,19 @@ class EcommApp.App
         @running = true
         @startListener.call()
     ###
-    Stop App - the main function in order EcommApp to run
+    Stop App - the main function in order Jikamu to run
     ###
     stop: ->
       @listener = null
       return
    
 ###
-EcommApp.Page - provide the page template for EcommApp App 
+Jikamu.Page - provide the page template for Jikamu App 
   
 
 ###
 
-class EcommApp.Page
+class Jikamu.Page
   constructor: ->
     @properties = 
       page_name: false
@@ -159,7 +159,7 @@ class EcommApp.Page
       @properties.page_name = new_page_name;
       @
     else
-      throw "EcommApp.Page: Invalid page_name"
+      throw "Jikamu.Page: Invalid page_name"
     
   controller: (new_controller) ->
     #console.log @
@@ -167,7 +167,7 @@ class EcommApp.Page
       @properties.controller = new_controller
       @
     else
-      throw "EcommApp.Page: Invalid controller this should be a function"
+      throw "Jikamu.Page: Invalid controller this should be a function"
   ###
   @deprecated
   ###
@@ -176,7 +176,7 @@ class EcommApp.Page
       @properties.before_load = new_before_load
       @
     else
-      throw "EcommApp.Page: Invalid before load callback this should be a function"
+      throw "Jikamu.Page: Invalid before load callback this should be a function"
   
   ###
   @deprecated
@@ -186,20 +186,20 @@ class EcommApp.Page
       @properties.after_load = new_after_load
       @
     else 
-      throw "EcommApp.Page: Invalid after load callback this should be a function"
+      throw "Jikamu.Page: Invalid after load callback this should be a function"
  
  
  
 ###
-EcommApp Router - Requires a Page object and this will be serve as the page for 
+Jikamu Router - Requires a Page object and this will be serve as the page for 
 the Apps, and it will add the URL rules that will be needed by the Router Class 
 later on.
 
-Thanks to DavisJS and I got an idea how to match or create pattern for EcommApp.AppListener
+Thanks to DavisJS and I got an idea how to match or create pattern for Jikamu.AppListener
 ###
 
   
-EcommApp.routes = []
+Jikamu.routes = []
 
 ###
 Regex pattern from DavisJS.coms
@@ -211,7 +211,7 @@ splatNameReplacement = "(.*)"
 nameRegex = /[:|\*]([\w\d]+)/g
 
 
-class EcommApp.Route
+class Jikamu.Route
   constructor: (route_config) ->
     @properties = 
       urlpath: false
@@ -221,10 +221,10 @@ class EcommApp.Route
         @properties.urlpath = @convertUrlPathtoRegExp new_urlpath
         @
     else
-        throw "EcommApp.Route: Empty or Invalid url path"
+        throw "Jikamu.Route: Empty or Invalid url path"
   
   page: (obj) ->
-    @properties.page = new EcommApp.Page()
+    @properties.page = new Jikamu.Page()
       .page_name(obj.page_name)
       .controller(obj.controller)
       .before_load(obj.before_load)
@@ -238,14 +238,14 @@ class EcommApp.Route
       str = path.replace(pathNameRegex, pathNameReplacement)
                .replace(splatNameRegex, splatNameReplacement)
       path.lastIndex = 0;
-      if window.EcommApp.DEBUG then  console.log "Converts #{path} and it converts to #{new RegExp("^" + str + "$", "gi")}"
+      if window.Jikamu.DEBUG then  console.log "Converts #{path} and it converts to #{new RegExp("^" + str + "$", "gi")}"
       new RegExp("^#{str}$","gi");
     else 
-      if window.EcommApp.DEBUG then  console.log "Pass the original path variable"
+      if window.Jikamu.DEBUG then  console.log "Pass the original path variable"
       path
  
  ###
- Save Route - saves the current route object to the global variable EcommApp.routes
+ Save Route - saves the current route object to the global variable Jikamu.routes
 
  @method: save
  
@@ -254,6 +254,6 @@ class EcommApp.Route
   _arr = {}
   _arr.urlpath = @properties.urlpath
   _arr.handler = @properties.page
-  EcommApp.routes.push _arr
+  Jikamu.routes.push _arr
   
  

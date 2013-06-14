@@ -1,17 +1,17 @@
 /*
-Global Variables for EcommApp
+Global Variables for Jikamu
 */
 
-var EcommApp, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement;
+var Jikamu, log, nameRegex, pathNameRegex, pathNameReplacement, splatNameRegex, splatNameReplacement;
 
-if (window.EcommApp == null) {
-  window.EcommApp = {};
+if (window.Jikamu == null) {
+  window.Jikamu = {};
 }
 
-EcommApp = function(config) {
+Jikamu = function(config) {
   var _app;
-  _app = new EcommApp.App();
-  EcommApp.$(function() {
+  _app = new Jikamu.App();
+  Jikamu.$(function() {
     return _app.start();
   });
   return _app;
@@ -23,7 +23,7 @@ Debug Mode - Set false hide log messages
 */
 
 
-window.EcommApp.DEBUG = true;
+window.Jikamu.DEBUG = true;
 
 /*
 JS Tools
@@ -31,7 +31,7 @@ JS Tools
 
 
 log = function(log_message) {
-  return window.EcommApp.DEBUG && window.console && console.log(log_message);
+  return window.Jikamu.DEBUG && window.console && console.log(log_message);
 };
 
 /*
@@ -39,16 +39,16 @@ Check if jQuery library exists along with jQuery Address
 */
 
 
-EcommApp.$ = window.jQuery ? jQuery : void 0;
+Jikamu.$ = window.jQuery ? jQuery : void 0;
 
-EcommApp.$.address = EcommApp.$.address ? EcommApp.$.address : void 0;
+Jikamu.$.address = Jikamu.$.address ? Jikamu.$.address : void 0;
 
 /*
-EcommApp Application
+Jikamu Application
 */
 
 
-EcommApp.App = (function() {
+Jikamu.App = (function() {
   function App() {}
 
   App.prototype.running = false;
@@ -64,13 +64,13 @@ EcommApp.App = (function() {
   App.handleRequest = function() {
     var route, status, _i, _len, _ref;
     status = false;
-    _ref = EcommApp.routes;
+    _ref = Jikamu.routes;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       route = _ref[_i];
       route.urlpath.lastIndex = 0;
-      if (route.urlpath.test(EcommApp.$.address.path())) {
-        EcommApp.App.launcher(this, route.handler);
-        if (window.EcommApp.DEBUG) {
+      if (route.urlpath.test(Jikamu.$.address.path())) {
+        Jikamu.App.launcher(this, route.handler);
+        if (window.Jikamu.DEBUG) {
           console.log("call controller for the url " + route.urlpath);
         }
         status = true;
@@ -90,22 +90,22 @@ EcommApp.App = (function() {
 
   App.launcher = function(_this, current_handler) {
     var afterLoad, beforeLoad, controllerLoad;
-    if (current_handler instanceof EcommApp.Page) {
+    if (current_handler instanceof Jikamu.Page) {
       afterLoad = function(_self, _d) {
         return current_handler.properties.after_load.call(_self, _d);
       };
       beforeLoad = function() {
         var _deferred;
-        _deferred = new EcommApp.$.Deferred();
-        EcommApp.$.when(current_handler.properties.before_load.call()).then(function() {
+        _deferred = new Jikamu.$.Deferred();
+        Jikamu.$.when(current_handler.properties.before_load.call()).then(function() {
           return _deferred.resolve();
         });
         return _deferred.promise();
       };
       controllerLoad = function() {
         var _deferred;
-        _deferred = new EcommApp.$.Deferred();
-        EcommApp.$.when(current_handler.properties.controller.call()).then(function() {
+        _deferred = new Jikamu.$.Deferred();
+        Jikamu.$.when(current_handler.properties.controller.call()).then(function() {
           return _deferred.resolve();
         });
         return _deferred.promise();
@@ -121,7 +121,7 @@ EcommApp.App = (function() {
       });
       return;
     } else {
-      throw "EcommApp.App : Invalid Page Controller";
+      throw "Jikamu.App : Invalid Page Controller";
     }
   };
 
@@ -133,11 +133,11 @@ EcommApp.App = (function() {
 
   App.prototype.startListener = function() {
     var url_handler;
-    url_handler = EcommApp.App.handleRequest;
+    url_handler = Jikamu.App.handleRequest;
     if (window.location.hash) {
-      this.listener = EcommApp.$(document).ready(function() {
-        EcommApp.$.address.init(function() {
-          EcommApp.$('._address').address();
+      this.listener = Jikamu.$(document).ready(function() {
+        Jikamu.$.address.init(function() {
+          Jikamu.$('._address').address();
         }).bind('change', function() {
           url_handler.call();
         });
@@ -146,7 +146,7 @@ EcommApp.App = (function() {
   };
 
   /*
-  start App - the main function in order EcommApp to run
+  start App - the main function in order Jikamu to run
   */
 
 
@@ -161,7 +161,7 @@ EcommApp.App = (function() {
   };
 
   /*
-  Stop App - the main function in order EcommApp to run
+  Stop App - the main function in order Jikamu to run
   */
 
 
@@ -174,11 +174,11 @@ EcommApp.App = (function() {
 })();
 
 /*
-EcommApp.Page - provide the page template for EcommApp App
+Jikamu.Page - provide the page template for Jikamu App
 */
 
 
-EcommApp.Page = (function() {
+Jikamu.Page = (function() {
   function Page() {
     this.properties = {
       page_name: false,
@@ -193,7 +193,7 @@ EcommApp.Page = (function() {
       this.properties.page_name = new_page_name;
       return this;
     } else {
-      throw "EcommApp.Page: Invalid page_name";
+      throw "Jikamu.Page: Invalid page_name";
     }
   };
 
@@ -202,7 +202,7 @@ EcommApp.Page = (function() {
       this.properties.controller = new_controller;
       return this;
     } else {
-      throw "EcommApp.Page: Invalid controller this should be a function";
+      throw "Jikamu.Page: Invalid controller this should be a function";
     }
   };
 
@@ -216,7 +216,7 @@ EcommApp.Page = (function() {
       this.properties.before_load = new_before_load;
       return this;
     } else {
-      throw "EcommApp.Page: Invalid before load callback this should be a function";
+      throw "Jikamu.Page: Invalid before load callback this should be a function";
     }
   };
 
@@ -230,7 +230,7 @@ EcommApp.Page = (function() {
       this.properties.after_load = new_after_load;
       return this;
     } else {
-      throw "EcommApp.Page: Invalid after load callback this should be a function";
+      throw "Jikamu.Page: Invalid after load callback this should be a function";
     }
   };
 
@@ -239,15 +239,15 @@ EcommApp.Page = (function() {
 })();
 
 /*
-EcommApp Router - Requires a Page object and this will be serve as the page for 
+Jikamu Router - Requires a Page object and this will be serve as the page for 
 the Apps, and it will add the URL rules that will be needed by the Router Class 
 later on.
 
-Thanks to DavisJS and I got an idea how to match or create pattern for EcommApp.AppListener
+Thanks to DavisJS and I got an idea how to match or create pattern for Jikamu.AppListener
 */
 
 
-EcommApp.routes = [];
+Jikamu.routes = [];
 
 /*
 Regex pattern from DavisJS.coms
@@ -264,7 +264,7 @@ splatNameReplacement = "(.*)";
 
 nameRegex = /[:|\*]([\w\d]+)/g;
 
-EcommApp.Route = (function() {
+Jikamu.Route = (function() {
   function Route(route_config) {
     this.properties = {
       urlpath: false,
@@ -277,12 +277,12 @@ EcommApp.Route = (function() {
       this.properties.urlpath = this.convertUrlPathtoRegExp(new_urlpath);
       return this;
     } else {
-      throw "EcommApp.Route: Empty or Invalid url path";
+      throw "Jikamu.Route: Empty or Invalid url path";
     }
   };
 
   Route.prototype.page = function(obj) {
-    this.properties.page = new EcommApp.Page().page_name(obj.page_name).controller(obj.controller).before_load(obj.before_load).after_load(obj.after_load);
+    this.properties.page = new Jikamu.Page().page_name(obj.page_name).controller(obj.controller).before_load(obj.before_load).after_load(obj.after_load);
     return this;
   };
 
@@ -291,12 +291,12 @@ EcommApp.Route = (function() {
     if (!(path instanceof RegExp)) {
       str = path.replace(pathNameRegex, pathNameReplacement).replace(splatNameRegex, splatNameReplacement);
       path.lastIndex = 0;
-      if (window.EcommApp.DEBUG) {
+      if (window.Jikamu.DEBUG) {
         console.log("Converts " + path + " and it converts to " + (new RegExp("^" + str + "$", "gi")));
       }
       return new RegExp("^" + str + "$", "gi");
     } else {
-      if (window.EcommApp.DEBUG) {
+      if (window.Jikamu.DEBUG) {
         console.log("Pass the original path variable");
       }
       return path;
@@ -309,7 +309,7 @@ EcommApp.Route = (function() {
 
 ({
   /*
-  Save Route - saves the current route object to the global variable EcommApp.routes
+  Save Route - saves the current route object to the global variable Jikamu.routes
   
   @method: save
   */
@@ -319,6 +319,6 @@ EcommApp.Route = (function() {
     _arr = {};
     _arr.urlpath = this.properties.urlpath;
     _arr.handler = this.properties.page;
-    return EcommApp.routes.push(_arr);
+    return Jikamu.routes.push(_arr);
   }
 });
